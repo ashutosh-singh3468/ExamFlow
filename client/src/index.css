@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 244 242 234; /* exam paper */
+    --card: 255 255 255;
+    --fg: 21 22 28; /* ink */
+    --muted: 117 114 103;
+    --subtle: 241 239 232;
+    --line: 229 226 216;
+    --primary: 61 68 240;
+    --primary-fg: 255 255 255;
+    --primary-soft: 240 241 255;
+    --primary-strong: 48 54 207;
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-bg font-sans text-[14px] leading-normal text-fg;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+  /* faint paper grain across the whole app */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.08 0 0 0 0 0.1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+  h1,
+  h2 {
+    @apply font-display;
+    font-optical-sizing: auto;
+  }
+  ::selection {
+    @apply bg-mark text-ink;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-500/60 ring-offset-2 ring-offset-bg;
+  }
+  /* grids never grow wider than their container (responsive grid-cols-* utilities override this) */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  input[type='number']::-webkit-inner-spin-button {
+    opacity: 0.5;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-ink/10 bg-card shadow-card;
+  }
+  /* signature tactile lift: the card rises off the page and casts a hard ink shadow */
+  .lift {
+    @apply transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-x-[3px] hover:-translate-y-[3px] hover:border-ink hover:shadow-ink;
+  }
+  .label {
+    @apply mb-1.5 block text-[13px] font-semibold text-slate-700;
+  }
+  .eyebrow {
+    @apply font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-slate-500;
+  }
+  .field {
+    @apply block h-10 w-full rounded-xl border border-ink/15 bg-white px-3.5 text-[14px] text-fg transition duration-150
+      placeholder:text-slate-400 hover:border-ink/30 focus:border-ink focus:outline-none focus:ring-4 focus:ring-indigo-500/15
+      disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted;
+  }
+  textarea.field {
+    @apply h-auto py-2.5;
+  }
+  .kbd {
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded border border-ink/15 border-b-2 bg-white px-1 font-mono text-[10px] font-semibold text-slate-600;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line)) transparent;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* highlighter stroke behind a word */
+  .hl {
+    background-image: linear-gradient(104deg, transparent 0.4em, theme('colors.mark.DEFAULT') 0.5em, theme('colors.mark.DEFAULT') 93%, transparent 96%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: 0 0.12em;
+    padding: 0 0.12em;
+    margin: 0 -0.12em;
+    border-radius: 0.2em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .hl-animate {
+    @apply animate-mark-in;
+  }
+  /* seat-grid texture echoing an exam hall seen from above */
+  .bg-seats {
+    background-image: radial-gradient(circle at 50% 50%, rgb(21 22 28 / 0.09) 2.2px, transparent 2.6px);
+    background-size: 22px 22px;
+  }
+  .bg-rule {
+    background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgb(61 68 240 / 0.08) 31px 32px);
+  }
+  /* perforated ticket edge: place on a 1px wide divider element */
+  .perforation {
+    background-image: linear-gradient(to bottom, rgb(21 22 28 / 0.22) 55%, transparent 0);
+    background-size: 1px 9px;
+    background-repeat: repeat-y;
+  }
+  .ticket-notch {
+    @apply absolute size-5 rounded-full border border-ink/10 bg-bg;
+  }
+  .skeleton {
+    @apply rounded-md bg-[linear-gradient(90deg,rgb(var(--subtle))_25%,rgb(var(--line)/0.7)_37%,rgb(var(--subtle))_63%)] bg-[length:400%_100%];
+    animation: shimmer 1.4s ease infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  body::before {
+    display: none;
+  }
+}
